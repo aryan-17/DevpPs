@@ -1,0 +1,570 @@
+{
+  "info": {
+    "name": "DevPortal API",
+    "description": "DevPortal backend API – cookie-based auth. Run 1-Bootstrap, then 2-Login before other requests.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": null,
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "email", "value": "admin@example.com" },
+    { "key": "password", "value": "Admin123!" },
+    { "key": "envId", "value": "" },
+    { "key": "projectId", "value": "" },
+    { "key": "credentialId", "value": "" },
+    { "key": "userId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "1. Auth",
+      "item": [
+        {
+          "name": "Bootstrap Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201 or 409', () => {",
+                  "    pm.expect([201, 409]).to.include(pm.response.code);",
+                  "});",
+                  "const body = pm.response.json();",
+                  "pm.test('Has message or id', () => {",
+                  "    pm.expect(body.message || body.id).to.be.ok;",
+                  "});",
+                  "if (pm.response.code === 201 && body.id) {",
+                  "    pm.collectionVariables.set('userId', body.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Admin\",\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/bootstrap-admin"
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Has email and role', () => {",
+                  "    pm.expect(body.email).to.be.a('string');",
+                  "    pm.expect(body.role).to.be.oneOf(['ADMIN', 'DEVELOPER']);",
+                  "});",
+                  "pm.test('Cookies set', () => {",
+                  "    const cookies = pm.cookies.toObject();",
+                  "    pm.expect(cookies.accessToken || pm.response.headers.get('Set-Cookie')).to.be.ok;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/login"
+          }
+        },
+        {
+          "name": "Get Me",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Has email and role', () => {",
+                  "    pm.expect(body.email).to.be.a('string');",
+                  "    pm.expect(body.role).to.be.oneOf(['ADMIN', 'DEVELOPER']);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/auth/me"
+          }
+        },
+        {
+          "name": "Refresh",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Has email and role', () => {",
+                  "    pm.expect(body.email).to.be.a('string');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/auth/refresh"
+          }
+        },
+        {
+          "name": "Logout",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 204', () => pm.response.to.have.status(204));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/auth/logout"
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Environments",
+      "item": [
+        {
+          "name": "List Environments",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Returns array', () => pm.expect(body).to.be.an('array'));",
+                  "if (body.length > 0 && !pm.collectionVariables.get('envId')) {",
+                  "    pm.collectionVariables.set('envId', body[0].id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/envs"
+          }
+        },
+        {
+          "name": "Create Environment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Has id and name', () => {",
+                  "    pm.expect(body.id).to.be.a('string');",
+                  "    pm.expect(body.name).to.be.a('string');",
+                  "});",
+                  "pm.collectionVariables.set('envId', body.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"qa\",\n  \"colorCode\": \"#22c55e\"\n}"
+            },
+            "url": "{{baseUrl}}/api/envs"
+          }
+        },
+        {
+          "name": "Update Environment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"qa\",\n  \"colorCode\": \"#22c55e\"\n}"
+            },
+            "url": "{{baseUrl}}/api/envs/{{envId}}"
+          }
+        },
+        {
+          "name": "Delete Environment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 204', () => pm.response.to.have.status(204));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/envs/{{envId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Projects",
+      "item": [
+        {
+          "name": "List Projects",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Returns array', () => pm.expect(body).to.be.an('array'));",
+                  "if (body.length > 0 && !pm.collectionVariables.get('projectId')) {",
+                  "    pm.collectionVariables.set('projectId', body[0].id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/envs/{{envId}}/projects"
+          }
+        },
+        {
+          "name": "Create Project",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Has id and name', () => {",
+                  "    pm.expect(body.id).to.be.a('string');",
+                  "});",
+                  "pm.collectionVariables.set('projectId', body.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"my-service\",\n  \"description\": \"Test project\",\n  \"team\": \"backend\",\n  \"status\": \"active\"\n}"
+            },
+            "url": "{{baseUrl}}/api/envs/{{envId}}/projects"
+          }
+        },
+        {
+          "name": "Update Project",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"my-service\",\n  \"description\": \"Updated\",\n  \"team\": \"backend\",\n  \"status\": \"active\"\n}"
+            },
+            "url": "{{baseUrl}}/api/envs/{{envId}}/projects/{{projectId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Credentials",
+      "item": [
+        {
+          "name": "List Credentials",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Returns array', () => pm.expect(body).to.be.an('array'));",
+                  "if (body.length > 0 && !pm.collectionVariables.get('credentialId')) {",
+                  "    pm.collectionVariables.set('credentialId', body[0].id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/envs/{{envId}}/projects/{{projectId}}/credentials"
+          }
+        },
+        {
+          "name": "Create Credential",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Has id and key', () => {",
+                  "    pm.expect(body.id).to.be.a('string');",
+                  "    pm.expect(body.key).to.be.a('string');",
+                  "});",
+                  "pm.collectionVariables.set('credentialId', body.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"key\": \"API_KEY\",\n  \"value\": \"secret123\",\n  \"type\": \"secret\",\n  \"description\": \"Test credential\"\n}"
+            },
+            "url": "{{baseUrl}}/api/envs/{{envId}}/projects/{{projectId}}/credentials"
+          }
+        },
+        {
+          "name": "Reveal Credential",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Value revealed', () => pm.expect(body.value).to.be.a('string'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/envs/{{envId}}/projects/{{projectId}}/credentials/{{credentialId}}/reveal"
+          }
+        },
+        {
+          "name": "Update Credential",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"key\": \"API_KEY\",\n  \"value\": \"new-secret\",\n  \"type\": \"secret\",\n  \"description\": \"Updated\"\n}"
+            },
+            "url": "{{baseUrl}}/api/envs/{{envId}}/projects/{{projectId}}/credentials/{{credentialId}}"
+          }
+        },
+        {
+          "name": "Delete Credential",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 204', () => pm.response.to.have.status(204));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/envs/{{envId}}/projects/{{projectId}}/credentials/{{credentialId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Admin",
+      "item": [
+        {
+          "name": "List Users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Returns array', () => pm.expect(body).to.be.an('array'));",
+                  "if (body.length > 0 && !pm.collectionVariables.get('userId')) {",
+                  "    pm.collectionVariables.set('userId', body[0].id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/admin/users"
+          }
+        },
+        {
+          "name": "Invite User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Has userId and temporaryPassword', () => {",
+                  "    pm.expect(body.userId).to.be.a('string');",
+                  "    pm.expect(body.temporaryPassword).to.be.a('string');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Dev User\",\n  \"email\": \"dev@example.com\",\n  \"role\": \"DEVELOPER\"\n}"
+            },
+            "url": "{{baseUrl}}/api/admin/users/invite"
+          }
+        },
+        {
+          "name": "Update User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"DEVELOPER\",\n  \"active\": true\n}"
+            },
+            "url": "{{baseUrl}}/api/admin/users/{{userId}}"
+          }
+        },
+        {
+          "name": "List Audit Logs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Returns array', () => pm.expect(body).to.be.an('array'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/admin/audit-logs"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Collection Runner Flow",
+      "item": [
+        {
+          "name": "Full Auth Flow",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Run order: Bootstrap Admin -> Login",
+                  "// Subsequent requests use cookies automatically"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/auth/me",
+            "description": "Run after Login to verify session"
+          }
+        }
+      ]
+    }
+  ]
+}

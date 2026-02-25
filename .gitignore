@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+ui/dist
+ui/dist-ssr
+server/build
+server/out
+target/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+application-local.yml
+*-local.yml
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Gradle
+.gradle/
+!gradle-wrapper.jar
+
+# Misc
+*.local
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.cache
+application.yml
