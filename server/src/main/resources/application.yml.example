@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: devportal-backend
+  datasource:
+    url: jdbc:postgresql://ep-patient-glitter-aigz9nr5-pooler.c-4.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+    username: your_username
+    password: your_password
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      max-lifetime: 1800000   # 30 minutes
+      idle-timeout: 600000    # 10 minutes
+      connection-timeout: 30000
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+
+server:
+  port: 8080
+
+devportal:
+  cookie:
+    secure: false  # Set true in prod (HTTPS)
+  cors:
+    allowed-origins: http://localhost:5173  # Comma-separated for prod
+  jwt:
+    # Env DEVPORTAL_JWT_SECRET or property; default for local dev only
+    secret: devportal-jwt-secret-change-me
+    access-token-expiration-minutes: 480 # 8 hours
+    refresh-token-expiration-days: 7
+  encryption:
+    key: 00000000000000000000000000000000
+
+logging:
+  level:
+    root: INFO
+    org.springframework.security: INFO
+    com.devportal: DEBUG
+
