@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../lib/auth'
+import { DashboardSkeleton } from './DashboardSkeleton'
 
 function SidebarLink({ to, label }: { to: string; label: string }) {
   return (
@@ -13,7 +14,9 @@ function SidebarLink({ to, label }: { to: string; label: string }) {
   )
 }
 
-export function AppShell() {
+type AppShellProps = { authLoading?: boolean }
+
+export function AppShell({ authLoading = false }: AppShellProps) {
   const { role, logout } = useAuth()
   const nav = useNavigate()
   const location = useLocation()
@@ -93,7 +96,7 @@ export function AppShell() {
             <div className="pill">API: /api → :8080</div>
           </div>
         </div>
-        <Outlet />
+        {authLoading ? <DashboardSkeleton /> : <Outlet />}
       </main>
     </div>
   )

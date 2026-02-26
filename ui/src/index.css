@@ -270,4 +270,42 @@ textarea {
 
 .wrap {
   overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.table.credentials-table {
+  table-layout: fixed;
+}
+
+.table.credentials-table th:nth-child(1) { width: 14%; }
+.table.credentials-table th:nth-child(2) { width: 12%; }
+.table.credentials-table th:nth-child(3) { width: 8%; }
+.table.credentials-table th:nth-child(4) { width: 26%; }
+.table.credentials-table th:nth-child(5) { width: 20%; }
+.table.credentials-table th:nth-child(6) { width: 20%; }
+
+.table.credentials-table td {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Skeleton shimmer */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.06) 0%,
+    rgba(255, 255, 255, 0.12) 50%,
+    rgba(255, 255, 255, 0.06) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.2s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }

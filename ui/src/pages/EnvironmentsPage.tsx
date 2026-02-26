@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import type { ApiError } from '../lib/api'
 import { useAuth } from '../lib/auth'
 import type { Environment } from '../lib/types'
+import { TableSkeleton } from '../components/TableSkeleton'
 
 type Draft = { name: string; colorCode: string }
 
@@ -120,6 +121,9 @@ export function EnvironmentsPage() {
       ) : null}
 
       <div className="panel" style={{ padding: 0 }}>
+        {loading ? (
+          <TableSkeleton columns={4} rows={5} />
+        ) : (
         <table className="table">
           <thead>
             <tr>
@@ -130,13 +134,7 @@ export function EnvironmentsPage() {
             </tr>
           </thead>
           <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={4} className="muted">
-                  Loading…
-                </td>
-              </tr>
-            ) : envs.length === 0 ? (
+            {envs.length === 0 ? (
               <tr>
                 <td colSpan={4} className="muted">
                   No environments yet.
@@ -213,6 +211,7 @@ export function EnvironmentsPage() {
             )}
           </tbody>
         </table>
+        )}
       </div>
     </div>
   )

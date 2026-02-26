@@ -1,5 +1,6 @@
 package com.devportal.dto;
 
+import com.devportal.model.CredentialType;
 import jakarta.validation.constraints.NotBlank;
 
 public class CredentialRequest {
@@ -10,7 +11,7 @@ public class CredentialRequest {
     @NotBlank
     private String value;
 
-    private String type;
+    private CredentialType type;
 
     private String description;
 
@@ -30,11 +31,11 @@ public class CredentialRequest {
         this.value = value;
     }
 
-    public String getType() {
+    public CredentialType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(CredentialType type) {
         this.type = type;
     }
 

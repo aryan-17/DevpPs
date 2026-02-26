@@ -7,17 +7,16 @@ export function LoginPage() {
   const { user, loaded, login } = useAuth()
   const nav = useNavigate()
   const loc = useLocation()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
 
   const next = (loc.state as { from?: string } | null)?.from ?? '/dashboard'
 
   if (loaded && user) {
     return <Navigate to={next} replace />
   }
-
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
 
   return (
     <div className="login-wrap">

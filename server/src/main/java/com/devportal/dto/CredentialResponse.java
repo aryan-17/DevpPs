@@ -1,5 +1,7 @@
 package com.devportal.dto;
 
+import com.devportal.model.CredentialType;
+
 import java.time.Instant;
 import java.util.UUID;
 
@@ -9,7 +11,7 @@ public class CredentialResponse {
     private UUID projectId;
     private String key;
     private String value;
-    private String type;
+    private CredentialType type;
     private String description;
     private UUID updatedByUserId;
     private Instant updatedAt;
@@ -46,11 +48,11 @@ public class CredentialResponse {
         this.value = value;
     }
 
-    public String getType() {
+    public CredentialType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(CredentialType type) {
         this.type = type;
     }
 

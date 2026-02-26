@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import type { ApiError } from '../lib/api'
 import { useAuth } from '../lib/auth'
 import type { Role, User } from '../lib/types'
+import { TableSkeleton } from '../components/TableSkeleton'
 
 type InviteResponse = { userId: string; temporaryPassword: string }
 
@@ -131,6 +132,9 @@ export function AdminUsersPage() {
       </div>
 
       <div className="panel" style={{ padding: 0 }}>
+        {loading ? (
+          <TableSkeleton columns={6} rows={5} />
+        ) : (
         <table className="table">
           <thead>
             <tr>
@@ -139,17 +143,11 @@ export function AdminUsersPage() {
               <th>Role</th>
               <th>Active</th>
               <th>ID</th>
-              <th style={{ width: 200 }}>Actions</th>
+              <th style={{ width: 250 }}>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={6} className="muted">
-                  Loading…
-                </td>
-              </tr>
-            ) : users.length === 0 ? (
+            {users.length === 0 ? (
               <tr>
                 <td colSpan={6} className="muted">
                   No users.
@@ -209,6 +207,7 @@ export function AdminUsersPage() {
             )}
           </tbody>
         </table>
+        )}
       </div>
     </div>
   )

@@ -19,12 +19,14 @@ export type Project = {
   status?: string | null
 }
 
+export type CredentialType = 'SECRET' | 'FILE'
+
 export type Credential = {
   id: string
   projectId: string
   key: string
   value: string
-  type?: string | null
+  type?: CredentialType | null
   description?: string | null
   updatedByUserId?: string | null
   updatedAt?: string | null

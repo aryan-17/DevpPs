@@ -3,6 +3,7 @@ package com.devportal.controller;
 import com.devportal.dto.CredentialRequest;
 import com.devportal.dto.CredentialResponse;
 import com.devportal.model.Credential;
+import com.devportal.model.CredentialType;
 import com.devportal.model.User;
 import com.devportal.repository.UserRepository;
 import com.devportal.service.CredentialService;
@@ -135,7 +136,7 @@ public class CredentialController extends BaseController {
                 }
                 String key = parts[0].trim();
                 String value = parts[1].trim();
-                String type = parts.length > 2 ? parts[2].trim() : null;
+                CredentialType type = CredentialType.fromString(parts.length > 2 ? parts[2].trim() : null);
                 String description = parts.length > 3 ? parts[3].trim() : null;
                 credentialService.create(envId, projectId, key, value, type, description, user, ip);
                 count++;
@@ -150,7 +151,7 @@ public class CredentialController extends BaseController {
         r.setProjectId(c.getProject().getId());
         r.setKey(c.getKey());
         r.setValue("***");
-        r.setType(c.getType());
+        r.setType(c.getType() != null ? c.getType() : CredentialType.SECRET);
         r.setDescription(c.getDescription());
         if (c.getUpdatedBy() != null) {
             r.setUpdatedByUserId(c.getUpdatedBy().getId());

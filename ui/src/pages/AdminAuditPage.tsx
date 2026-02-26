@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import type { ApiError } from '../lib/api'
 import { useAuth } from '../lib/auth'
 import type { AuditLog } from '../lib/types'
+import { TableSkeleton } from '../components/TableSkeleton'
 
 export function AdminAuditPage() {
   const { authedRequest, role } = useAuth()
@@ -53,6 +54,9 @@ export function AdminAuditPage() {
       </div>
 
       <div className="panel" style={{ padding: 0 }}>
+        {loading ? (
+          <TableSkeleton columns={8} rows={8} />
+        ) : (
         <table className="table">
           <thead>
             <tr>
@@ -67,13 +71,7 @@ export function AdminAuditPage() {
             </tr>
           </thead>
           <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={8} className="muted">
-                  Loading…
-                </td>
-              </tr>
-            ) : logs.length === 0 ? (
+            {logs.length === 0 ? (
               <tr>
                 <td colSpan={8} className="muted">
                   No logs.
@@ -95,6 +93,7 @@ export function AdminAuditPage() {
             )}
           </tbody>
         </table>
+        )}
       </div>
     </div>
   )

@@ -42,6 +42,15 @@ public class AdminService {
     public User updateUser(UUID id, User.Role role, boolean active) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        if (user.getRole() == User.Role.ADMIN) {
+            long activeAdminCount = userRepository.countByRoleAndActiveTrue(User.Role.ADMIN);
+            boolean wouldRemoveLastAdmin = (activeAdminCount <= 1)
+                    && (role != User.Role.ADMIN || !active);
+            if (wouldRemoveLastAdmin) {
+                throw new IllegalArgumentException(
+                        "Cannot demote or deactivate the last admin. At least one active admin must remain.");
+            }
+        }
         user.setRole(role);
         user.setActive(active);
         return userRepository.save(user);

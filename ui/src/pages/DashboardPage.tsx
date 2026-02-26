@@ -3,6 +3,8 @@ import { Link, useSearchParams } from 'react-router-dom'
 import type { ApiError } from '../lib/api'
 import { useAuth } from '../lib/auth'
 import type { Credential, Environment, Project } from '../lib/types'
+import { DashboardSkeleton } from '../components/DashboardSkeleton'
+import { TableSkeleton } from '../components/TableSkeleton'
 
 type EnvWithProjects = {
   env: Environment
@@ -158,7 +160,11 @@ export function DashboardPage() {
               Clear
             </Link>
           </div>
-          {hits.length ? (
+          {searching ? (
+            <div className="panel" style={{ marginTop: 12, padding: 0 }}>
+              <TableSkeleton columns={4} rows={5} />
+            </div>
+          ) : hits.length ? (
             <div className="panel" style={{ marginTop: 12, padding: 0 }}>
               <table className="table">
                 <thead>
@@ -190,7 +196,7 @@ export function DashboardPage() {
       ) : null}
 
       {loading ? (
-        <div className="panel muted">Loading…</div>
+        <DashboardSkeleton />
       ) : data.length === 0 ? (
         <div className="panel muted">No environments yet.</div>
       ) : (

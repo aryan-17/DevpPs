@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import type { ApiError } from '../lib/api'
 import { useAuth } from '../lib/auth'
 import type { Project } from '../lib/types'
+import { TableSkeleton } from '../components/TableSkeleton'
 
 type Draft = {
   name: string
@@ -141,6 +142,9 @@ export function ProjectsPage() {
       ) : null}
 
       <div className="panel" style={{ padding: 0 }}>
+        {loading ? (
+          <TableSkeleton columns={6} rows={5} />
+        ) : (
         <table className="table">
           <thead>
             <tr>
@@ -153,13 +157,7 @@ export function ProjectsPage() {
             </tr>
           </thead>
           <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={6} className="muted">
-                  Loading…
-                </td>
-              </tr>
-            ) : projects.length === 0 ? (
+            {projects.length === 0 ? (
               <tr>
                 <td colSpan={6} className="muted">
                   No projects yet.
@@ -235,6 +233,7 @@ export function ProjectsPage() {
             )}
           </tbody>
         </table>
+        )}
       </div>
     </div>
   )

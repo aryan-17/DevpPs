@@ -24,7 +24,7 @@ function AuthBootstrap({ children }: { children: React.ReactNode }) {
 function RequireAuth({ children }: { children: ReactElement }) {
   const { user, loaded } = useAuth()
   const loc = useLocation()
-  if (!loaded) return null
+  if (!loaded) return <AppShell authLoading />
   if (user === null) return <Navigate to="/login" replace state={{ from: loc.pathname }} />
   return children
 }
